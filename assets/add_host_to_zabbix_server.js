@@ -66,7 +66,7 @@ ZabbixAPI.prototype.templateNameToId = function (names) {
     return ret;
 }
 
-//main
+//ここからmain
 var host = runtime.getEnv("host");
 var zabbixServerUri = runtime.getEnv("zabbixServer");
 
@@ -81,24 +81,31 @@ if (hostCheck) {
    throw host["name"] + " is exist";
 }
 
-var groupId = zbx.hostgroupNameToId(host["hostgroups"]);
-var templateId = zbx.templateNameToId(host["templates"]);
+//host.createのパラメータを用意
 var params = {
     "host": host["name"],
     "interfaces": host["interfaces"],
     "groups": [],
     "templates": []
 }
+
+//hostgroupIDをセット
+var groupId = zbx.hostgroupNameToId(host["hostgroups"]);
 for (var j = groupId.length; j--;) {
     params["groups"].push({
         "groupid": groupId[j]
     });
 }
+
+//templateIDをセット
+var templateId = zbx.templateNameToId(host["templates"]);
 for (var j = templateId.length; j--;) {
     params["templates"].push({
         "templateid": templateId[j]
     });
 }
+
+//ホスト登録
 var res = zbx.call('host.create', params);
 if (res["hostids"].length > 0) {
     console.log("***** " + host["name"] + " is create success. hostid: " + res["hostids"][0]);
